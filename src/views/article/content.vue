@@ -6,16 +6,32 @@
 
 <script>
 import MDContent from '@/components/MDContent'
+import { fetchArticle } from '@/api/article'
+
 export default {
   name: 'ArticleContent',
   components: {
     MDContent
   },
-  data: () => ({
-    content: ''
-  }),
+  data() {
+    return {
+      content: ''
+    }
+  },
   created() {
-    this.content = `# Test \n ## 1. H1`
+    const id = this.$route.params && this.$route.params.id
+    this.fetchData(id)
+  },
+  methods: {
+    fetchData(id) {
+      fetchArticle(id)
+        .then((response) => {
+          this.content = response.data.content
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
   }
 }
 </script>

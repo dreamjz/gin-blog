@@ -25,7 +25,9 @@ export default {
     }
   },
   created() {
-    this.md = new MarkdownIt()
+    this.md = new MarkdownIt({
+      html: true
+    })
   }
 }
 </script>

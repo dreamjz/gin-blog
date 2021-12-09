@@ -85,11 +85,11 @@ export const constantRoutes = [
         hidden: true
       },
       {
-        path: 'content',
+        path: 'content/:id(\\d+)',
         component: () => import('@/views/article/content'),
         name: 'ArticleContent',
         meta: { title: 'Article Content', icon: 'content' },
-        hidden: false
+        hidden: true
       },
       {
         path: 'list',

@@ -49,7 +49,7 @@
 
       <el-table-column min-width="300px" label="Title">
         <template slot-scope="{ row }">
-          <router-link :to="'/article/edit/' + row.id" class="link-type">
+          <router-link :to="'/article/content/' + row.id" class="link-type">
             <span>{{ row.title }}</span>
           </router-link>
         </template>
