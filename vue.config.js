@@ -114,5 +114,9 @@ module.exports = {
       // https:// webpack.js.org/configuration/optimization/#optimizationruntimechunk
       config.optimization.runtimeChunk('single')
     })
-  }
+  },
+  // Whether to use the build of Vue core that includes the runtime compiler.
+  // Setting it to true will allow you to use the template option in Vue components,
+  // but will incur around an extra 10kb payload for your app
+  runtimeCompiler: true
 }
