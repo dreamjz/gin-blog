@@ -4,10 +4,9 @@ const { param2Obj } = require('./utils')
 const user = require('./user')
 const table = require('./table')
 
-const mocks = [
-  ...user,
-  ...table
-]
+const article = require('./article')
+
+const mocks = [...user, ...table, ...article]
 
 // for front mock
 // please use it cautiously, it will redefine XMLHttpRequest,
@@ -46,7 +45,11 @@ function mockXHR() {
   }
 
   for (const i of mocks) {
-    Mock.mock(new RegExp(i.url), i.type || 'get', XHR2ExpressReqWrap(i.response))
+    Mock.mock(
+      new RegExp(i.url),
+      i.type || 'get',
+      XHR2ExpressReqWrap(i.response)
+    )
   }
 }
 
@@ -54,4 +57,3 @@ module.exports = {
   mocks,
   mockXHR
 }
-
