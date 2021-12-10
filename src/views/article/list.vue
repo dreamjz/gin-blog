@@ -16,9 +16,7 @@
 
       <el-table-column width="180px" align="center" label="Date">
         <template slot-scope="scope">
-          <span>{{
-            scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}')
-          }}</span>
+          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
@@ -55,13 +53,16 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="120">
+      <el-table-column align="center" label="Actions" width="230">
         <template slot-scope="scope">
           <router-link :to="'/article/edit/' + scope.row.id">
-            <el-button type="primary" size="small" icon="el-icon-edit">
+            <el-button class="edit-btn" type="primary" size="small" icon="el-icon-edit">
               Edit
             </el-button>
           </router-link>
+          <el-button class="del-btn" type="primary" size="small" icon="el-icon-delete" @click="deleteArticle($index)">
+            Delete
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -115,12 +116,22 @@ export default {
         this.total = response.data.total
         this.listLoading = false
       })
+    },
+    deleteArticle(index) {
+      this.list.splice(index, 1)
     }
   }
 }
 </script>
 
 <style scoped>
+.el-button {
+  margin-right: 10px;
+}
+
+.edit-btn, .del-btn {
+  width: 85px;
+}
 .edit-input {
   padding-right: 100px;
 }
