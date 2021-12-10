@@ -31,3 +31,11 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.md-content {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  margin-left: 30px;
+}
+</style>
