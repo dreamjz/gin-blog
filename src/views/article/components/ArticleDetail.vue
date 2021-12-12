@@ -16,7 +16,6 @@
 
       <div class="createPost-main-container">
         <el-row>
-          <Warning />
 
           <el-col :span="24">
             <el-form-item style="margin-bottom: 40px;" prop="title">
@@ -37,7 +36,7 @@
 
                 <el-col :span="10">
                   <el-form-item label-width="120px" label="Publish Time:" class="postInfo-container-item">
-                    <el-date-picker v-model="displayTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="Select date and time" />
+                    <el-date-picker v-model="displayTime" type="datetime" readonly="true" format="yyyy-MM-dd HH:mm:ss" placeholder="Select date and time" />
                   </el-form-item>
                 </el-col>
 
@@ -45,7 +44,7 @@
                   <el-form-item label-width="90px" label="Importance:" class="postInfo-container-item">
                     <el-rate
                       v-model="postForm.importance"
-                      :max="3"
+                      :max="6"
                       :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
                       :low-threshold="1"
                       :high-threshold="3"
@@ -59,7 +58,7 @@
         </el-row>
 
         <el-form-item style="margin-bottom: 40px;" label-width="70px" label="Summary:">
-          <el-input v-model="postForm.content_short" :rows="1" type="textarea" class="article-textarea" autosize placeholder="Please enter the content" />
+          <el-input v-model="postForm.summary" :rows="1" type="textarea" class="article-textarea" autosize placeholder="Please enter the content" />
           <span v-show="contentShortLength" class="word-counter">{{ contentShortLength }}words</span>
         </el-form-item>
 
@@ -81,19 +80,18 @@ import Upload from '@/components/Upload/SingleImage3'
 import MDinput from '@/components/MDinput'
 import Sticky from '@/components/Sticky' // 粘性header组件
 import { validURL } from '@/utils/validate'
-import { fetchArticle } from '@/api/article'
+import { fetchArticle, createArticle, updateArticle } from '@/api/article'
 import { searchUser } from '@/api/remote-search'
-import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
 
 const defaultForm = {
-  status: 'draft',
+  status: 0,
   title: '', // 文章题目
   content: '', // 文章内容
-  content_short: '', // 文章摘要
+  summary: '', // 文章摘要
   source_uri: '', // 文章外链
   image_uri: '', // 文章图片
-  display_time: undefined, // 前台展示时间
+  updatedAt: undefined, // 前台展示时间
   id: undefined,
   platforms: ['a-platform'],
   comment_disabled: false,
@@ -102,7 +100,7 @@ const defaultForm = {
 
 export default {
   name: 'ArticleDetail',
-  components: { Tinymce, MDinput, Upload, Sticky, Warning, CommentDropdown, PlatformDropdown, SourceUrlDropdown },
+  components: { Tinymce, MDinput, Upload, Sticky, CommentDropdown, PlatformDropdown, SourceUrlDropdown },
   props: {
     isEdit: {
       type: Boolean,
@@ -141,7 +139,7 @@ export default {
       loading: false,
       userListOptions: [],
       rules: {
-        image_uri: [{ validator: validateRequire }],
+        // image_uri: [{ validator: validateRequire }],
         title: [{ validator: validateRequire }],
         content: [{ validator: validateRequire }],
         source_uri: [{ validator: validateSourceUri, trigger: 'blur' }]
@@ -151,7 +149,7 @@ export default {
   },
   computed: {
     contentShortLength() {
-      return this.postForm.content_short.length
+      return this.postForm.summary.length
     },
     displayTime: {
       // set and get is useful when the data
@@ -159,10 +157,10 @@ export default {
       // back end return => "2013-06-25 06:59:25"
       // front end need timestamp => 1372114765000
       get() {
-        return (+new Date(this.postForm.display_time))
+        return (+new Date())
       },
       set(val) {
-        this.postForm.display_time = new Date(val)
+        this.postForm.updatedAt = new Date(val)
       }
     }
   },
@@ -181,10 +179,6 @@ export default {
     fetchData(id) {
       fetchArticle(id).then(response => {
         this.postForm = response.data
-
-        // just for test
-        this.postForm.title += `   Article Id:${this.postForm.id}`
-        this.postForm.content_short += `   Article Id:${this.postForm.id}`
 
         // set tagsview title
         this.setTagsViewTitle()
@@ -209,13 +203,40 @@ export default {
       this.$refs.postForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$notify({
-            title: '成功',
-            message: '发布文章成功',
-            type: 'success',
-            duration: 2000
-          })
-          this.postForm.status = 'published'
+          // create
+          if (!this.isEdit) {
+            this.postForm.createdBy = this.postForm.author
+            // status 1 is published
+            this.postForm.status = 1
+            createArticle(this.postForm)
+              .then((response) => {
+                this.$notify({
+                  title: '成功',
+                  message: '发布文章成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              })
+              .catch((err) => {
+                console.log(err)
+              })
+          } else { // edit
+            this.postForm.updatedBy = this.postForm.author
+            // status 1 is published
+            this.postForm.status = 1
+            updateArticle(this.postForm)
+              .then((response) => {
+                this.$notify({
+                  title: '成功',
+                  message: '发布文章成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              })
+              .catch((err) => {
+                console.log(err)
+              })
+          }
           this.loading = false
         } else {
           console.log('error submit!!')
@@ -240,10 +261,15 @@ export default {
       this.postForm.status = 'draft'
     },
     getRemoteUserList(query) {
-      searchUser(query).then(response => {
-        if (!response.data.items) return
-        this.userListOptions = response.data.items.map(v => v.name)
-      })
+      if (query) {
+        searchUser(query)
+          .then((response) => {
+            if (!response.data.list) return
+            this.userListOptions = response.data.list
+          }).catch((err) => {
+            console.log(err)
+          })
+      }
     }
   }
 }
