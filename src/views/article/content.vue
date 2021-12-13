@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="article-content">
     <MDContent :content="content" />
   </div>
 </template>
@@ -35,3 +35,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.article-content {
+  margin: 30px;
+}
+</style>
