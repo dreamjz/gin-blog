@@ -100,6 +100,18 @@ export const constantRoutes = [
     ]
   },
 
+  {
+    path: '/sysinfo',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'SystemInfo',
+        component: () => import('@/views/sysinfo'),
+        meta: { title: 'SystemInfo', icon: 'el-icon-cpu' }
+      }
+    ]
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
