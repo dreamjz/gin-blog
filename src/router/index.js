@@ -116,9 +116,12 @@ export const constantRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
+const baseUrl = process.env.PUBLIC_PATH
+
 const createRouter = () =>
   new Router({
-    // mode: 'history', // require service support
+    base: baseUrl,
+    mode: 'history', // require service support
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes
   })
