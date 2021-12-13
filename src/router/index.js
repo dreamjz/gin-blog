@@ -121,7 +121,7 @@ const baseUrl = process.env.PUBLIC_PATH
 const createRouter = () =>
   new Router({
     base: baseUrl,
-    mode: 'history', // require service support
+    // mode: 'history', // require service support
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes
   })
