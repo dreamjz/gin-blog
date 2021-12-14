@@ -102,6 +102,13 @@ export default {
         this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false
+      }).catch(err => {
+        console.log(err)
+        this.$notify.error({
+          title: '错误',
+          message: '获取数据错误',
+          duration: 2000
+        })
       })
     },
     deleteArticle(index, id) {
