@@ -116,9 +116,12 @@ export const constantRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
+const baseURL = process.env.VUE_APP_PUBLIC_PATH
+console.log('Router base: ' + baseURL)
+
 const createRouter = () =>
   new Router({
-    base: '/app/',
+    // base: baseURL,
     // mode: 'history', // require service support
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes

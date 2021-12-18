@@ -18,10 +18,12 @@ const port = process.env.port || process.env.npm_config_port || 9528 // dev port
 const api = process.env.VUE_APP_BASE_API
 const serverHost = process.env.SERVER_HOST
 const serverPort = process.env.SERVER_PORT
-const pulicPath = process.env.PUBLIC_PATH
+const pulicPath = process.env.VUE_APP_PUBLIC_PATH
 
 console.log('Server: ' + serverHost + ':' + serverPort)
 console.log('Public Path: ' + pulicPath)
+console.log('Api: ' + api)
+
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
   /**
